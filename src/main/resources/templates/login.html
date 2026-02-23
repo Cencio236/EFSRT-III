@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Intranet Cibertec</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(rgba(0, 46, 93, 0.7), rgba(0, 46, 93, 0.7)), 
+                        url('/img/fondo-cibertec.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .logo-container img {
+            width: 200px;
+            margin-bottom: 20px;
+            height: auto;
+        }
+
+        .login-title {
+            color: #002e5d;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+            color: #002e5d;
+            border-right: none;
+        }
+
+        .form-control { border-left: none; padding: 12px; }
+        .form-control:focus { box-shadow: none; border-color: #ced4da; }
+
+        .btn-login {
+            background-color: #002e5d;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-weight: bold;
+            width: 100%;
+            border-radius: 5px;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-login:hover {
+            background-color: #004080;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .alert { font-size: 0.85rem; border-radius: 8px; }
+        
+        .forgot-password {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .forgot-password a {
+            color: #002e5d;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="logo-container">
+            <img th:src="@{/img/cibertec-logo.png}" alt="Cibertec">
+        </div>
+        
+        <h2 class="login-title">Portal de Acceso</h2>
+
+        <div th:if="${error}" class="alert alert-danger mb-3" th:text="${error}"></div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="mb-3 text-start">
+                <label class="form-label small fw-bold" style="color: #002e5d;">Usuario</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    <input type="text" name="username" class="form-control" placeholder="Ingrese su código" required>
+                </div>
+            </div>
+
+            <div class="mb-4 text-start">
+                <label class="form-label small fw-bold" style="color: #002e5d;">Contraseña</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    <input type="password" name="password" class="form-control" placeholder="********" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-login">INGRESAR</button>
+        </form>
+
+        <div class="forgot-password">
+            ¿Olvidaste tu contraseña? <br>
+            <a href="#">Haz clic aquí para recuperarla</a>
+        </div>
+    </div>
+
+</body>
+</html>

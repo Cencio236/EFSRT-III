@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout-alumno :: html}">
+<body>
+    <div th:fragment="content">
+        
+        <div th:if="${seccion == 'inicio'}">
+            <h3 class="mb-4 text-primary"><i class="fas fa-home me-2"></i>Bienvenido a tu Intranet Académica</h3>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <h5 class="text-secondary mb-3"><i class="fas fa-bullhorn me-2"></i>Anuncios Recientes</h5>
+                    
+                    <div th:each="n : ${noticias}" class="card border-0 shadow-sm mb-3 border-start border-primary border-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h5 class="text-primary" th:text="${n.titulo}">Título de la Noticia</h5>
+                                <span class="badge bg-light text-primary border" th:text="${n.tipo}">Tipo</span>
+                            </div>
+                            <p class="text-muted small mb-0" th:text="${n.descripcion}">Descripción completa del anuncio...</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-0 shadow-sm bg-primary text-white p-3 h-100">
+                                <h6><i class="fas fa-video me-2"></i>Conferencia de IA</h6>
+                                <p class="small mb-2">No te pierdas la charla sobre "IA en el Desarrollo de Software" este viernes.</p>
+                                <button class="btn btn-sm btn-light mt-auto">Unirse al Zoom</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-0 shadow-sm border-start border-info border-4 p-3 h-100">
+                                <h6 class="text-info"><i class="fas fa-users me-2"></i>Talleres de Verano</h6>
+                                <p class="small text-muted">Inscripciones abiertas para los talleres de Habilidades Blandas y Liderazgo.</p>
+                                <a href="#" class="small text-decoration-none">Ver más detalles &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <h5 class="text-danger mb-3"><i class="fas fa-clock me-2"></i>Próximos Exámenes</h5>
+                    <div class="list-group shadow-sm border-0 mb-4">
+                        <div class="list-group-item border-0 border-bottom">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1 fw-bold">T1 - Algoritmos</h6>
+                                <small class="badge bg-danger">Mañana</small>
+                            </div>
+                            <p class="mb-1 small text-muted">08:30 AM - Aula Virtual</p>
+                        </div>
+                        <div class="list-group-item border-0 border-bottom">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1 fw-bold">Evaluación Continua 2</h6>
+                                <small class="text-muted">Jueves 26</small>
+                            </div>
+                            <p class="mb-1 small text-muted">Sistemas Operativos</p>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm bg-warning bg-opacity-10 p-3">
+                        <h6 class="text-warning-emphasis fw-bold"><i class="fas fa-lightbulb me-2"></i>Tip de Estudio</h6>
+                        <p class="small mb-0 fst-italic">"La técnica Pomodoro te ayuda a concentrarte: 25 min de estudio y 5 min de descanso."</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert bg-white shadow-sm border-0 text-center p-5 mt-4">
+                <i class="fas fa-quote-left text-primary mb-3 fa-2x"></i>
+                <h4 class="fst-italic text-secondary px-5">"El éxito es la suma de pequeños esfuerzos repetidos día tras día."</h4>
+                <p class="text-muted mt-2">- Robert Collier</p>
+                <div class="mt-3">
+                    <span class="badge rounded-pill bg-primary px-3">#CibertecOrgullo</span>
+                    <span class="badge rounded-pill bg-info px-3 text-white">#Perseverancia</span>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${seccion == 'notas'}">
+            <h3 class="mb-4 text-primary"><i class="fas fa-file-invoice me-2"></i>Mis Calificaciones</h3>
+            <div class="card border-0 shadow-sm p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Curso</th>
+                                <th class="text-center">Nota Final</th>
+                                <th class="text-center">Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="n : ${notas}">
+                                <td th:text="${n.curso != null ? n.curso.nombreCurso : 'Curso no asignado'}">Curso</td>
+                                <td class="text-center">
+                                    <span th:text="${n.valorNota != null ? n.valorNota : '0'}" 
+                                          th:class="${n.valorNota != null and n.valorNota >= 13 ? 'h5 text-success fw-bold' : 'h5 text-danger fw-bold'}">15</span>
+                                </td>
+                                <td class="text-center">
+                                    <span th:if="${n.valorNota != null and n.valorNota >= 13}" class="badge bg-success">Aprobado</span>
+                                    <span th:if="${n.valorNota != null and n.valorNota < 13}" class="badge bg-danger">Desaprobado</span>
+                                    <span th:if="${n.valorNota == null}" class="badge bg-secondary">Pendiente</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" th:data-bs-target="'#modalNota' + ${n.idNota}">
+                                        <i class="fas fa-eye"></i> Detalle
+                                    </button>
+
+                                    <div class="modal fade" th:id="'modalNota' + ${n.idNota}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content border-0 shadow">
+                                                <div class="modal-header bg-primary text-white">
+                                                   <h5 class="modal-title" th:text="${n.curso != null ? n.curso.nombreCurso : 'Detalle'}">Detalle de Calificaciones</h5>
+                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body text-center p-4">
+                                                    <div class="row">
+                                                        <div class="col-4 border-end"><h6>T1</h6><p class="h4" th:text="${n['t1'] ?: '-'}">0</p></div>
+                                                        <div class="col-4 border-end"><h6>T2</h6><p class="h4" th:text="${n['t2'] ?: '-'}">0</p></div>
+                                                        <div class="col-4"><h6>EF</h6><p class="h4 fw-bold text-primary" th:text="${n['examenFinal'] ?: '-'}">0</p></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${seccion == 'mensajes'}">
+            <h3 class="mb-4 text-primary"><i class="fas fa-envelope-open-text me-2"></i>Bandeja de Entrada</h3>
+            <div class="card border-0 shadow-sm">
+                <div class="list-group list-group-flush">
+                    <div th:each="m : ${mensajes}" class="list-group-item p-4 border-start border-4"
+                         th:classappend="${m.leido ? 'border-light' : 'border-primary bg-light bg-opacity-10'}">
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center">
+                                <img th:src="${m.emisor != null and m.emisor['fotoUrl'] != null ? m.emisor['fotoUrl'] : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" 
+                                     class="rounded-circle me-3 shadow-sm" width="45" height="45" alt="Avatar">
+                                <div>
+                                    <h6 th:text="${m.emisor != null ? (m.emisor['nombreCompleto'] ?: m.emisor.username) : 'Sistema Cibertec'}" class="mb-0 fw-bold text-dark">Nombre Profesor</h6>
+                                    <small class="text-primary fw-bold" th:text="${m.asunto}">Asunto del mensaje</small>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                              <small th:text="${m.fechaEnvio != null ? #temporals.format(m.fechaEnvio, 'dd MMM, HH:mm') : 'Fecha no disp.'}" class="text-muted d-block small">Fecha</small>
+                                <span th:if="${!m.leido}" class="badge rounded-pill bg-primary mt-1">Nuevo</span>
+                            </div>
+                        </div>
+                        
+                        <p th:text="${m.contenido}" class="text-muted small mb-3 ps-5">Contenido detallado del mensaje...</p>
+                        
+                        <div class="ps-5 d-flex gap-2">
+                            <button class="btn btn-sm btn-primary px-3 shadow-sm" type="button" data-bs-toggle="collapse" th:data-bs-target="'#reply' + ${m.idMensaje}">
+                                <i class="fas fa-reply me-1"></i> Responder al docente
+                            </button>
+                            
+                            <form th:if="${!m.leido}" th:action="@{/alumno/mensajes/leer}" method="post" style="display:inline;">
+                                <input type="hidden" name="idMensaje" th:value="${m.idMensaje}">
+                                <button type="submit" class="btn btn-sm btn-outline-success px-3">
+                                    <i class="fas fa-check-double me-1"></i> Marcar como visto
+                                </button>
+                            </form>
+                            
+                            <form th:action="@{/alumno/mensajes/eliminar}" method="post" style="display:inline;"
+                                  th:onsubmit="return confirm('¿Estás seguro? No has respondido este mensaje aún.')">
+                                <input type="hidden" name="idMensaje" th:value="${m.idMensaje}">
+                                <button type="submit" class="btn btn-sm btn-light border px-3 text-danger">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="collapse mt-3 ps-5" th:id="'reply' + ${m.idMensaje}">
+                            <div class="card card-body border-0 bg-light p-3">
+                                <form th:action="@{/alumno/mensajes/responder}" method="post">
+                                    <input type="hidden" name="idReceptor" th:value="${m.emisor.idUsuario}">
+                                    <input type="hidden" name="asunto" th:value="'RE: ' + ${m.asunto}">
+                                    <textarea name="contenido" class="form-control mb-2" rows="2" placeholder="Escribe tu respuesta aquí..." required></textarea>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-sm btn-success">Enviar</button>
+                                        <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="collapse" th:data-bs-target="'#reply' + ${m.idMensaje}">Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${seccion == 'perfil'}">
+            <h3 class="mb-4 text-primary"><i class="fas fa-user-circle me-2"></i>Mi Perfil de Alumno</h3>
+            <div class="card border-0 shadow-sm p-4">
+                <div class="row align-items-center" th:with="u=${session.perfil}">
+                    <div class="col-md-4 text-center border-end">
+                        <div class="position-relative d-inline-block">
+                            <img th:src="${u['fotoUrl'] != null ? u['fotoUrl'] : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" 
+                                 class="rounded-circle shadow mb-3" width="180" height="180" style="object-fit: cover; border: 5px solid #fff;">
+                        </div>
+                        <form th:action="@{/alumno/perfil/foto}" method="post" enctype="multipart/form-data" class="mt-2">
+                            <div class="input-group input-group-sm">
+                                <input type="file" name="foto" class="form-control" accept="image/*" required>
+                                <button class="btn btn-primary" type="submit">Subir</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-8 ps-md-5">
+                        <h4 class="text-primary mb-3" th:text="${u['nombreCompleto'] ?: u.username}">Nombre del Alumno</h4>
+                        <div class="row g-3">
+                            <div class="col-6"><p class="mb-0 text-muted small">DNI</p><h6 th:text="${u['dni'] ?: '00000000'}">00000000</h6></div>
+                            <div class="col-6"><p class="mb-0 text-muted small">Usuario</p><h6 th:text="${u.username}">usuario</h6></div>
+                            <div class="col-12"><p class="mb-0 text-muted small">Correo Institucional</p><h6 th:text="${u['email'] ?: 'alumno@cibertec.edu.pe'}">alumno@cibertec.edu.pe</h6></div>
+                            <div class="col-6"><p class="mb-0 text-muted small">Rol</p><span class="badge bg-info text-white" th:text="${u.rol}">ALUMNO</span></div>
+                            <div class="col-6"><p class="mb-0 text-muted small">Fecha de Registro</p><h6 th:text="${u['fechaRegistro'] != null ? #temporals.format(u['fechaRegistro'], 'dd/MM/yyyy') : '01/01/2026'}">01/01/2026</h6></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${seccion == 'calendario'}">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="text-primary mb-0"><i class="fas fa-calendar-alt me-2"></i>Mi Agenda Cibertec</h3>
+                <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalEvento">
+                    <i class="fas fa-plus me-1"></i>Nuevo Recordatorio
+                </button>
+            </div>
+            <div class="card border-0 shadow-sm p-4">
+                <div id='calendar'></div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalEvento" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Nuevo Recordatorio</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form th:action="@{/alumno/calendario/guardar}" method="post">
+                        <div class="modal-body p-4">
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Título</label>
+                                <input type="text" name="titulo" class="form-control" placeholder="Ej: Estudiar para EF" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Tipo</label>
+                                <select name="tipo" class="form-select">
+                                    <option value="Examen">Examen</option>
+                                    <option value="Tarea">Tarea</option>
+                                    <option value="Charla">Charla</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Fecha y Hora</label>
+                                <input type="datetime-local" name="fechaStr" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Descripción</label>
+                                <textarea name="descripcion" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Guardar Recordatorio</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

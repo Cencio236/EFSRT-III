@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html}">
+<body>
+    <div th:fragment="content">
+
+        <div th:if="${seccion == 'inicio'}">
+            <h3 class="fw-bold mb-4">Panel de Anuncios</h3>
+            <div th:each="n : ${noticias}" class="card card-news shadow-sm p-3 mb-3 bg-white">
+                <div class="d-flex justify-content-between">
+                    <h5 class="text-primary fw-bold" th:text="${n.titulo}">Título</h5>
+                    <span class="badge bg-info text-dark" th:text="${n.tipo}">TIPO</span>
+                </div>
+                <p class="mb-1" th:text="${n.descripcion}">Descripción</p>
+                <small class="text-muted"><i class="far fa-clock me-1"></i> Fecha: <span th:text="${n.fechaInicio}"></span></small>
+            </div>
+        </div>
+
+        <div th:if="${seccion == 'cursos'}">
+            <h3 class="fw-bold mb-4">Mis Cursos Asignados</h3>
+            <div class="row">
+                <div th:each="c : ${cursos}" class="col-md-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm text-center p-4">
+                        <div class="display-4 text-primary mb-3"><i class="fas fa-laptop-code"></i></div>
+                        <h5 class="fw-bold" th:text="${c.nombreCurso}">Nombre</h5>
+                        <p class="text-muted" th:text="${c.codigoSeccion}">Sección</p>
+                        <a th:href="@{/docente/curso/{id}(id=${c.idCurso})}" class="btn btn-primary w-100 mt-2">Ver Lista de Alumnos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${seccion == 'detalle-curso'}">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold" th:text="'Alumnos: ' + ${cursoSeleccionado.nombreCurso}">Curso</h3>
+                <a th:href="@{/docente/cursos}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left me-2"></i>Volver</a>
+            </div>
+            <div class="card shadow-sm border-0">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Alumno</th>
+                            <th>DNI</th>
+                            <th class="text-center" style="width: 150px;">Nota</th>
+                            <th class="text-end">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="n : ${notas}">
+                            <td th:text="${n.alumno.nombreCompleto}">Nombre</td>
+                            <td th:text="${n.alumno.dni}">DNI</td>
+                            <td class="text-center">
+                                <form th:action="@{/docente/nota/actualizar}" method="post" class="d-flex gap-1">
+                                    <input type="hidden" name="idNota" th:value="${n.idNota}">
+                                    <input type="hidden" name="idCurso" th:value="${cursoSeleccionado.idCurso}">
+                                    <input type="number" name="valor" th:value="${n.valorNota}" 
+                                           step="0.1" min="0" max="20" class="form-control form-control-sm text-center">
+                                    <button type="submit" class="btn btn-sm btn-success"><i class="fas fa-save"></i></button>
+                                </form>
+                            </td>
+                            <td class="text-end">
+                                <span th:if="${n.valorNota >= 12.5}" class="badge bg-success">Aprobado</span>
+                                <span th:if="${n.valorNota < 12.5}" class="badge bg-danger">Desaprobado</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div th:if="${seccion == 'calendario'}">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold">Calendario de Actividades</h3>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalActividad">
+                    <i class="fas fa-plus me-2"></i>Programar Nueva Actividad
+                </button>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-0">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th class="ps-4">Fecha y Hora</th>
+                                        <th>Tipo</th>
+                                        <th>Actividad / Descripción</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="a : ${actividades}">
+                                        <td class="ps-4">
+                                            <i class="far fa-calendar-alt me-2 text-primary"></i>
+                                            <span th:text="${#temporals.format(a.fechaInicio, 'dd/MM/yyyy - HH:mm')}"></span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${a.tipo == 'Examen'}" class="badge bg-danger">EXAMEN</span>
+                                            <span th:if="${a.tipo == 'Tarea'}" class="badge bg-primary">TAREA</span>
+                                            <span th:if="${a.tipo == 'Proyecto'}" class="badge bg-warning text-dark">PROYECTO</span>
+                                            <span th:if="${a.tipo == 'Evento'}" class="badge bg-info text-dark">EVENTO</span>
+                                        </td>
+                                        <td>
+                                            <strong th:text="${a.titulo}"></strong><br>
+                                            <small class="text-muted" th:text="${a.descripcion}"></small>
+                                        </td>
+                                        <td class="text-center">
+                                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(actividades)}">
+                                        <td colspan="4" class="text-center p-5 text-muted">
+                                            No hay actividades programadas. ¡Empieza creando una!
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalActividad" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form th:action="@{/docente/calendario/guardar}" method="post" class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title"><i class="fas fa-tasks me-2"></i>Nueva Actividad Académica</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-modal="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Título de la actividad:</label>
+                                <input type="text" name="titulo" class="form-control" placeholder="Ej: Examen Parcial de Java" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Tipo:</label>
+                                <select name="tipo" class="form-select" required>
+                                    <option value="Examen">Examen</option>
+                                    <option value="Tarea">Tarea</option>
+                                    <option value="Proyecto">Proyecto</option>
+                                    <option value="Evento">Evento Institucional</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Fecha y Hora:</label>
+                                <input type="datetime-local" name="fechaStr" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Instrucciones / Descripción:</label>
+                                <textarea name="descripcion" class="form-control" rows="3" placeholder="Detalles adicionales..."></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Programar Actividad</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${seccion == 'mensajes'}">
+            <div class="d-flex justify-content-between mb-4">
+                <h3 class="fw-bold">Bandeja de Entrada</h3>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalMensaje">
+                    <i class="fas fa-paper-plane me-2"></i>NUEVO MENSAJE
+                </button>
+            </div>
+            
+            <div class="list-group shadow-sm border-0">
+                <div th:each="m : ${mensajes}" class="list-group-item list-group-item-action border-0 mb-2 rounded shadow-sm">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1 fw-bold text-primary" th:text="${m.asunto}">Asunto</h6>
+                        <small class="text-muted" th:text="${m.fechaEnvio}"></small>
+                    </div>
+                    <p class="mb-1 small" th:text="${m.contenido}">Contenido</p>
+                    <small class="fw-bold" th:text="'De: ' + ${m.emisor.nombreCompleto}"></small>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalMensaje" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form th:action="@{/docente/mensajes/enviar}" method="post" class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title">Redactar Mensaje</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Destinatario (Alumno):</label>
+                                <select name="idReceptor" class="form-select" required>
+                                    <option value="">Seleccione un alumno...</option>
+                                    <option th:each="a : ${alumnos}" th:value="${a.idUsuario}" th:text="${a.nombreCompleto}"></option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Asunto:</label>
+                                <input type="text" name="asunto" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Mensaje:</label>
+                                <textarea name="contenido" class="form-control" rows="4" required></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Enviar Mensaje</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${seccion == 'calificaciones'}">
+            <h3 class="fw-bold mb-4">Resumen General</h3>
+            <div class="card border-0 shadow-sm">
+                <table class="table align-middle mb-0">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>Alumno</th>
+                            <th>DNI</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="a : ${alumnos}">
+                            <td th:text="${a.nombreCompleto}">Nombre</td>
+                            <td th:text="${a.dni}">DNI</td>
+                            <td><span class="badge bg-secondary">En curso</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div th:if="${seccion == 'perfil'}">
+            <div class="card border-0 shadow-sm p-5">
+                <div class="row align-items-center">
+                    <div class="col-md-3 text-center">
+                        <img th:src="${session.perfil.fotoUrl}" class="rounded-circle img-thumbnail shadow-sm" width="180">
+                    </div>
+                    <div class="col-md-9 border-start ps-5">
+                        <h2 class="fw-bold text-primary" th:text="${session.perfil.nombreCompleto}">Nombre</h2>
+                        <p class="text-muted">Docente Titular - Cibertec</p>
+                        <hr>
+                        <p><strong>DNI:</strong> <span th:text="${session.perfil.dni}"></span></p>
+                        <p><strong>Email:</strong> <span th:text="${session.perfil.email}"></span></p>
+                        <p><strong>Rol:</strong> <span class="badge bg-success" th:text="${session.perfil.rol}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
